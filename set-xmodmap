@@ -1,0 +1,37 @@
+#!/bin/bash
+
+################################################################################
+# Liest Konfigurationsdateien aus dem Ordner ~/.xmodmap und wendet sie an.     #
+# Wartet des weiteren auf das Entsperren des Desktop um die Dateien noch mal   #
+# zu laden.                                                                    #
+#                                                                              #
+# (c) 2016 Thomas Andres                                                       #
+################################################################################
+
+MAP_DIR=~/.xmodmap
+
+load_maps(){
+  for map in $MAP_DIR/* ; do
+    xmodmap $map &> /dev/null
+    if [ $? -ne 0 ]; then
+      echo `date`": Loading of '$map' failed." 1>&2
+    else
+      echo `date`": Loading of '$map' successful."
+    fi
+  done
+}
+
+# Set the modmap
+echo `date`": Loading the modified keyboard mapings."
+load_maps
+
+# Listen for unlock event
+echo `date`": Listen for unlock event..."
+dbus-monitor --session "type=signal,interface=com.canonical.Unity.Session,member=Unlocked" |
+  while read MSG; do
+    LOCK_STAT=`echo $MSG | awk '{print $NF}'`
+    if [[ "$LOCK_STAT" == "member=Unlocked" ]]; then
+        echo `date`": Received unlocking event."
+        load_maps
+    fi
+  done
