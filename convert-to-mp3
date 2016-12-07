@@ -1,0 +1,16 @@
+#!/bin/bash
+
+################################################################################
+# Konvertiert Mediendateien in das mp3 Format. Funktioniert auch mit Videos.   #
+#                                                                              #
+# (c) 2016 Thomas Andres                                                       #
+################################################################################
+
+while [ $# -gt 0 ]
+do
+  echo Converting \"$1\";
+  ffmpeg -y -i "$1" -vn -aq 2 "${1%.*}".mp3"";
+  shift; # Parameter nach links schieben
+  echo;
+done
+echo "Everything done."
