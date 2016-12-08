@@ -14,11 +14,11 @@ from time import sleep, localtime
 from subprocess import check_output, run
 import math
 
-# Path to image files
-imgPath = '~/Bilder/BitDay/1600x900'
-imgPath = expandvars(expanduser(imgPath))
-# Geographic coordinates [latitude, longitude]
-location = [49.0117, 12.1002]
+# Modify if necessary
+imgPath = '~/Bilder/BitDay/1600x900'    # Path to image files
+location = [49.0117, 12.1002]           # Geographic coordinates [latitude, longitude]
+
+switchPoint = [0.1, 0.2, 0.3, 0.8]
 
 def calculateSunriseSunset(T, latitude, longitude):
     # Geografische Breite in Bogenmaß
@@ -41,29 +41,30 @@ def calculateSunriseSunset(T, latitude, longitude):
 
 
 print(datetime.now().strftime('%a %w. %b %H:%M:%S %Y: BitDay wallpaper changer is running...'))
+imgPath = expandvars(expanduser(imgPath))
 pics = sorted([f for f in listdir(imgPath) if isfile(join(imgPath, f))])
 numOfPics = len(pics)
 pic = join(imgPath, pics[0])
 while True:
     currTime = datetime.now().hour + datetime.now().minute / 60.0
     sunrise, sunset = calculateSunriseSunset(datetime.now().timetuple().tm_yday, location[0], location[1])
-    if (currTime >= sunrise and currTime < ((12.0 - sunrise) * 1 / 5 + sunrise)):
+    if (currTime >= sunrise and currTime < ((12.0 - sunrise) * switchPoint[0] + sunrise)):
         pic = join(imgPath, pics[0])
-    elif (currTime >= ((12.0 - sunrise) * 1 / 5 + sunrise) and currTime < ((12.0 - sunrise) * 2 / 5 + sunrise)):
+    elif (currTime >= ((12.0 - sunrise) * switchPoint[0] + sunrise) and currTime < ((12.0 - sunrise) * switchPoint[1] + sunrise)):
         pic = join(imgPath, pics[1])
-    elif (currTime >= ((12.0 - sunrise) * 2 / 5 + sunrise) and currTime < ((12.0 - sunrise) * 3 / 5 + sunrise)):
+    elif (currTime >= ((12.0 - sunrise) * switchPoint[1] + sunrise) and currTime < ((12.0 - sunrise) * switchPoint[2] + sunrise)):
         pic = join(imgPath, pics[2])
-    elif (currTime >= ((12.0 - sunrise) * 3 / 5 + sunrise) and currTime < ((12.0 - sunrise) * 4 / 5 + sunrise)):
+    elif (currTime >= ((12.0 - sunrise) * switchPoint[2] + sunrise) and currTime < ((12.0 - sunrise) * switchPoint[3] + sunrise)):
         pic = join(imgPath, pics[3])
-    elif (currTime >= ((12.0 - sunrise) * 4 / 5 + sunrise) and currTime < ((sunset - 12.0) * 1 / 5 + 12.0)):  # Mittag
+    elif (currTime >= ((12.0 - sunrise) * switchPoint[3] + sunrise) and currTime < ((sunset - 12.0) * (1 - switchPoint[3]) + 12.0)):  # Mittag
         pic = join(imgPath, pics[4])
-    elif (currTime >= ((sunset - 12.0) * 1 / 5 + 12.0) and currTime < ((sunset - 12.0) * 2 / 5 + 12.0)):
+    elif (currTime >= ((sunset - 12.0) * (1 - switchPoint[3]) + 12.0) and currTime < ((sunset - 12.0) * (1 - switchPoint[2]) + 12.0)):
         pic = join(imgPath, pics[5])
-    elif (currTime >= ((sunset - 12.0) * 2 / 5 + 12.0) and currTime < ((sunset - 12.0) * 3 / 5 + 12.0)):
+    elif (currTime >= ((sunset - 12.0) * (1 - switchPoint[2]) + 12.0) and currTime < ((sunset - 12.0) * (1 - switchPoint[1]) + 12.0)):
         pic = join(imgPath, pics[6])
-    elif (currTime >= ((sunset - 12.0) * 3 / 5 + 12.0) and currTime < ((sunset - 12.0) * 4 / 5 + 12.0)):
+    elif (currTime >= ((sunset - 12.0) * (1 - switchPoint[1]) + 12.0) and currTime < ((sunset - 12.0) * (1 - switchPoint[0]) + 12.0)):
         pic = join(imgPath, pics[7])
-    elif (currTime >= ((sunset - 12.0) * 4 / 5 + 12.0) and currTime < sunset):
+    elif (currTime >= ((sunset - 12.0) * (1 - switchPoint[0]) + 12.0) and currTime < sunset):
         pic = join(imgPath, pics[8])
     elif (currTime >= sunset and currTime < (((24.0 - sunset) / 2.0) + sunset)):
         pic = join(imgPath, pics[9])
