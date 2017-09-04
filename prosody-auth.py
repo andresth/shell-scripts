@@ -1,4 +1,15 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+External authentication script for prosody mod_auth_external.
+
+Needs mod_auth_external https://modules.prosody.im/mod_auth_external.html
+Needs to be run as root.
+    `external_auth_command="sudo /path/to/script"`
+Make sure it is write protected
+    `chmod 555 /path/to/script`
+"""
 
 import crypt
 import grp
@@ -9,9 +20,7 @@ from subprocess import PIPE, Popen
 
 
 def isuser(username, domain, password=None):
-    """
-    Check if user exists and if he is a member of the group 'domain'
-    """
+    """Check if user exists and if he is a member of the group 'domain'."""
     try:
         spwd.getspnam(username)
         return username in grp.getgrnam(domain)[3]
@@ -24,9 +33,7 @@ def isuser(username, domain, password=None):
 
 
 def auth(username, domain, password=None):
-    """
-    Check if user is allowed to login
-    """
+    """Check if user is allowed to login."""
     password = '' if (password == 0) or (password is None) else password
     try:
         storedPassword = spwd.getspnam(username)[1]
@@ -42,14 +49,12 @@ def auth(username, domain, password=None):
 
 
 def setpass(username, domain, password=None):
-    """
-    Change user password
-    """
+    """Change user password."""
     password = '' if (password == 0) or (password is None) else password
     return False
 
 
-pattern = r'^(?P<command>.*?):(?P<username>.*?):(?P<domain>.*?)(?::(?P<password>.*?)){0,1}'  # noqa
+pattern = r'^(?P<command>.*?):(?P<username>.*?):(?P<domain>.*?)(?::(?P<password>.*?)){0,1}'
 methodes = {'isuser': isuser,
             'auth': auth,
             'setpass': setpass}
