@@ -13,6 +13,7 @@ Make sure it is write protected
 
 import crypt
 import grp
+import os
 import re
 import spwd
 import sys
@@ -60,6 +61,10 @@ methodes = {'isuser': isuser,
             'setpass': setpass}
 
 if __name__ == '__main__':
+    if os.geteuid != 0:
+        print('Please run as root.')
+        exit(999)
+
     while True:
         line = sys.stdin.readline().rstrip('\n')
         match = re.fullmatch(pattern, line, re.IGNORECASE)
