@@ -52,7 +52,22 @@ def auth(username, domain, password=None):
 def setpass(username, domain, password=None):
     """Change user password."""
     password = '' if (password == 0) or (password is None) else password
-    return False
+
+    if password == '':
+        return False
+
+    try:
+        if username not in grp.getgrnam(domain)[3]:
+            return False
+    except KeyError:
+        return False
+
+    cmd = ['/usr/bin/passwd', username]
+    p = Popen(cmd, stdin=PIPE)
+    p.stdin.write(u'%(p)s\n%(p)s\n' % {'p': password})
+    p.stdin.flush()
+    p.wait()
+    return p.returncode == 0
 
 
 pattern = r'^(?P<command>.*?):(?P<username>.*?):(?P<domain>.*?)(?::(?P<password>.*?)){0,1}'
