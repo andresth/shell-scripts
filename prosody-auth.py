@@ -39,8 +39,7 @@ def auth(username, domain, password=None):
     try:
         storedPassword = spwd.getspnam(username)[1]
         givenPassword = crypt.crypt(password, storedPassword)
-        return (username in grp.getgrnam(domain)[3]) \
-            and (storedPassword == givenPassword)
+        return (username in grp.getgrnam(domain)[3]) and (storedPassword == givenPassword)
     except KeyError:
         return False
     except PermissionError:
